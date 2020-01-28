@@ -6,17 +6,25 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import cliparser.OptionDoesNotExistException;
 import cliparser.OptionsParser;
 
 public class Httpc {
 
 	public static void main(String[] args) {
-		OptionsParser parser = new OptionsParser();
+		OptionsParser parser = new OptionsParser(1);
 		parser.addOption("get", 0, (arguments) ->
 			System.out.println("Here")
-				);
+		);
 		
-		parser.parse(args);
+		parser.addOption("-v", 1, (arguments) ->
+			System.out.println("doing -v: "+arguments[0])
+		);
+		try {
+			parser.parse(args);
+		} catch (OptionDoesNotExistException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private static String get(String url) {
