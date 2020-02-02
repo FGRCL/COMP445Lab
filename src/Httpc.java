@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
@@ -15,6 +17,7 @@ public class Httpc {
 	private static boolean verbose = false;
 	private static HashMap headers = new HashMap();
 	private static String content = "";
+	private static String url = "";
 	
 	public static void main(String[] args) {
 		OptionsParser parser = new OptionsParser(1);
@@ -42,40 +45,28 @@ public class Httpc {
 			System.out.println("file")
 		);
 	
+		URI uri = null;
 		try {
 			String url = parser.parse(args)[0];
+			if(!url.contains("http://")) {
+				url = "http://"+url;
+			}
+			uri = new URI(url);
 		} catch (OptionDoesNotExistException e) {
 			e.printStackTrace();
-		}
-	}
-	
-	private static String get(String url) {
-		StringBuilder response = new StringBuilder();
-		try {
-			Socket socket = new Socket(url, 80);
-
-			InputStream inStream = socket.getInputStream();
-			OutputStream outStream = socket.getOutputStream();
-			
-			outStream.write("GET / HTTP/1.0\r\n\r\n".getBytes());
-			
-			response = new StringBuilder();
-			int character;
-			do {
-				character = inStream.read();
-				response.append(character);
-			}while(character != -1);
-			
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return response.toString();
-	}
-	
-	public enum Method{
-		GET, POST
+		
+		Request request = new Request(method, verbose, headers, content, uri);
+		Response response = request.send();
+		
+		if(verbose) {
+			response.printVerbose();
+		}else {
+			response.printContent();			
+		}
 	}
 }
 

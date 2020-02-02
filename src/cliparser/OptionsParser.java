@@ -37,7 +37,7 @@ public class OptionsParser {
 	private String[] getProgramArguments(String[] arguments) {
 		String[] programArguments = new String[nbArguments];
 		for(int i=0; i<nbArguments; i++) {
-			programArguments[i] = arguments[arguments.length-i];
+			programArguments[i] = arguments[arguments.length-(i+1)];
 		}
 		return programArguments;
 	}	
