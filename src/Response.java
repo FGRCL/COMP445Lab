@@ -1,7 +1,7 @@
 
 public class Response {
-	String headers;
-	String content;
+	private String headers;
+	private String content;
 	
 	public Response(String fullResponse) {
 		String[] splitResponse = fullResponse.split("\r\n\r\n");
