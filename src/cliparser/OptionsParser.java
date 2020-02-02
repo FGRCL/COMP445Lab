@@ -1,8 +1,6 @@
 package cliparser;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class OptionsParser {
 	private HashMap<String, Option> options;

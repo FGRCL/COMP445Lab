@@ -1,12 +1,5 @@
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import cliparser.OptionDoesNotExistException;
@@ -15,9 +8,8 @@ import cliparser.OptionsParser;
 public class Httpc {
 	private static Method method;
 	private static boolean verbose = false;
-	private static HashMap headers = new HashMap();
+	private static HashMap<String, String> headers = new HashMap<String, String>();
 	private static String content = "";
-	private static String url = "";
 	
 	public static void main(String[] args) {
 		OptionsParser parser = new OptionsParser(1);
@@ -59,7 +51,7 @@ public class Httpc {
 			e.printStackTrace();
 		}
 		
-		Request request = new Request(method, verbose, headers, content, uri);
+		Request request = new Request(method, headers, content, uri);
 		Response response = request.send();
 		
 		if(verbose) {
