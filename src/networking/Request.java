@@ -1,3 +1,4 @@
+package networking;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,13 +11,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Request {
 	private Method method;
 	private HashMap<String, String> headers;
-	private String content;
 	private URI uri;
 	
 	public Request(Method method, HashMap<String, String> headers, String content, URI uri) {
 		this.method = method;
 		this.headers = headers;
-		this.content = content;
 		this.uri = uri;
 	}
 
