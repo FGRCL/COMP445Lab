@@ -20,8 +20,11 @@ public class Httpc {
 		}
 		AtomicReference<Method> method = new AtomicReference<Method>();
 		AtomicReference<String> content = new AtomicReference<String>();
+		content.set("");
 		AtomicReference<Boolean> verbose = new AtomicReference<Boolean>();
 		verbose.set(false);
+		AtomicReference<Boolean> printHelp = new AtomicReference<Boolean>();
+		printHelp.set(false);
 		headers = new HashMap<String, String>();
 		OptionsParser parser = new OptionsParser(1, new File("help.txt"));
 		parser.addOption("get", 0, new File("gethelp.txt"), (arguments) ->{
@@ -50,15 +53,19 @@ public class Httpc {
 			headers.put(headerKey, headerValue);
 		});
 		parser.addOption("-d", 1, "-d string\tAssociates an inline data to the body HTTP POST request.\r\n", (arguments) ->{
-			if(content.get() == null) {
+			if(content.get().isEmpty() && method.get() != Method.GET) {
 				content.set(arguments[0]); 
 				headers.put("Content-Length", content.get().length()+"");
+			}else {
+				printHelp.set(true);
 			}
 		});
 		parser.addOption("-f", 1, "-f file\tAssociates the content of a file to the body HTTP POST request.\r\n", (arguments)->{
-			if(content.get() == null) {
+			if(content.get().isEmpty() && method.get() != Method.GET) {
 				content.set(FileReader.getFileContent(new File(arguments[0])));
 				headers.put("Content-Length", content.get().length()+"");
+			}else {
+				printHelp.set(true);
 			}
 		});
 		parser.addOption("-o", 1, "prints the result to a file", (arguments) ->{
@@ -70,7 +77,11 @@ public class Httpc {
 			if(method.get() == null) {
 				System.err.println("no method specified");
 				return;
+			}else if(printHelp.get()) {
+				System.out.println(FileReader.getFileContent(new File("help.txt")));
+				return;
 			}
+			
 			if(!url.equals("help")) {
 				URI uri = null;
 				if(!url.contains("http://")) {

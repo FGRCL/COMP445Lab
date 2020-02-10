@@ -1,0 +1,12 @@
+{
+  "args": {
+    "assignment": "1", 
+    "course": "networking"
+  }, 
+  "headers": {
+    "Host": "54.221.185.81", 
+    "X-Amzn-Trace-Id": "Root=1-5e418431-fe374bcbca61f69afecf6868"
+  }, 
+  "origin": "132.205.229.196", 
+  "url": "http://54.221.185.81/get?course=networking&assignment=1"
+}
