@@ -12,19 +12,21 @@ public class Request {
 	private Method method;
 	private HashMap<String, String> headers;
 	private URI uri;
+	private String content =  "";
 	
 	public Request(Method method, HashMap<String, String> headers, String content, URI uri) {
 		this.method = method;
 		this.headers = headers;
 		this.uri = uri;
+		this.content = content;
 	}
 
 	public Response send(){
 		StringBuilder requestBuilder = new StringBuilder();
 		StringBuilder response = new StringBuilder();
-		requestBuilder.append(String.format("%s %s HTTP/1.0\r\n\r\n", getMethodString(), getStringPath()));
+		requestBuilder.append(String.format("%s %s HTTP/1.0\r\n", getMethodString(), getStringPath()));
 		requestBuilder.append(String.format("%s\r\n", getStringHeaders()));
-		requestBuilder.append(String.format("%s\r\n\r\n", getStringContent()));
+		requestBuilder.append(String.format("%s\r\n\r\n", content));
 		int port = uri.getPort() == -1 ? 80 : uri.getPort();
 		
 		try {
@@ -60,14 +62,8 @@ public class Request {
 		stringHeaders.set("");
 		headers.forEach((String key, String value) ->{
 			stringHeaders.set(stringHeaders.get()+key+": "+value+"\r\n");
-			System.out.println(key+value);
 		});
 		return stringHeaders.get();
-	}
-	
-	//TODO implement this method
-	private String getStringContent() {
-		return "";
 	}
 	
 	private String getStringPath() {

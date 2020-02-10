@@ -49,7 +49,7 @@ public class OptionsParser {
 			String[] programOptions = Arrays.copyOfRange(arguments, 0, arguments.length-nbArguments);
 			for(int i=0; i<programOptions.length; i++) {
 				Option currentOption = options.get(programOptions[i]);
-				if(currentOption == null) throw new OptionDoesNotExistException("Program option \""+currentOption+"\" does not exist");
+				if(currentOption == null) throw new OptionDoesNotExistException("Program option \""+programOptions[i]+"\" does not exist");
 				String[] optionArgs = new String[currentOption.getNbArguments()];
 				for(int j=0; j<currentOption.getNbArguments(); j++) {
 					optionArgs[j] = programOptions[i+j+1];

@@ -10,28 +10,26 @@ import cliparser.OptionDoesNotExistException;
 import cliparser.OptionsParser;
 
 public class Httpc {
-	private static Method method;
-	private static HashMap<String, String> headers = new HashMap<String, String>();
-	private static String content;
-
+	private static HashMap<String, String> headers;
+	private static File outputFile;
 	
 	public static void main(String[] args) {
+		AtomicReference<Method> method = new AtomicReference<Method>();
+		AtomicReference<String> content = new AtomicReference<String>();
 		AtomicReference<Boolean> verbose = new AtomicReference<Boolean>();
-		AtomicReference<Boolean> printToFile = new AtomicReference<Boolean>();
-		AtomicReference<String> outputFile = new AtomicReference<String>();
 		verbose.set(false);
-		printToFile.set(false);
+		headers = new HashMap<String, String>();
 		OptionsParser parser = new OptionsParser(1, new File("help.txt"));
 		parser.addOption("get", 0, new File("gethelp.txt"), (arguments) ->{
-			if( method == null) {
-				method = Method.GET;
+			if( method.get() == null) {
+				method.set(Method.GET);
 			}else {
 				
 			}
 		});
 		parser.addOption("post", 0, new File("posthelp.txt"), (arguments) ->{
-			if(method == null) {
-				method = Method.POST;
+			if(method.get() == null) {
+				method.set(Method.POST);
 			}else {
 				
 			}
@@ -44,48 +42,56 @@ public class Httpc {
 			String header = arguments[0];
 			int colonIndex = header.indexOf(':');
 			String headerKey = header.substring(0, colonIndex);
-			String headerValue = header.substring(colonIndex+1);
+			String headerValue = header.substring(colonIndex+2);
 			headers.put(headerKey, headerValue);
 		});
 		parser.addOption("-d", 1, "-d string\tAssociates an inline data to the body HTTP POST request.\r\n", (arguments) ->{
-			if(content != null) {
-				content = FileReader.getFileContent(new File(arguments[0]));
+			if(content.get() == null) {
+				content.set(arguments[0]); 
+				headers.put("Content-Length", content.get().length()+"");
 			}
 		});
 		parser.addOption("-f", 1, "-f file\tAssociates the content of a file to the body HTTP POST request.\r\n", (arguments)->{
-			if(content != null) {
-				content = FileReader.getFileContent(new File(arguments[0]));
+			if(content.get() == null) {
+				content.set(FileReader.getFileContent(new File(arguments[0])));
+				headers.put("Content-Length", content.get().length()+"");
 			}
 		});
 		parser.addOption("-o", 1, "prints the result to a file", (arguments) ->{
-			printToFile.set(true);
-			outputFile.set(arguments[0]);
+			outputFile = new File(arguments[0]);
 		});
 		
 		try {
 			String url = parser.parse(args)[0];
 			if(!url.equals("help")) {
 				URI uri = null;
-				try {
-					if(!url.contains("http://")) {
-						url = "http://"+url;
-					}
-					uri = new URI(url);
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
+				if(!url.contains("http://")) {
+					url = "http://"+url;
 				}
+				uri = new URI(url);
 				
-				Request request = new Request(method, headers, content, uri);
+				Request request = new Request(method.get(), headers, content.get(), uri);
 				Response response = request.send();
+				while(response.isRedirect()) {
+					request = new Request(method.get(), headers, content.get(), new URI(uri.getScheme()+"://"+uri.getHost()+response.getHeader("location")));
+					response = request.send();
+				}
 				
 				if((boolean)verbose.get()) {
 					response.printVerbose();
 				}else {
 					response.printContent();			
 				}
+				
+				if(outputFile != null) {
+					response.writeToFile(outputFile);
+				}
 			}
 		} catch (OptionDoesNotExistException e1) {
 			System.err.println(e1.getMessage());
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }
