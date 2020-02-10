@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.io.BufferedOutputStream;
 
 public class Response {
@@ -35,8 +37,9 @@ public class Response {
 	
 	public void printVerbose() {
 		System.out.println(httpVersion+" "+statusCode+" "+statusMessage);
-		System.out.println(headers+"\r\n");
-		
+		for(Entry<String, String> entry : headers.entrySet()) {
+			System.out.println(entry.getKey()+": "+entry.getValue());
+		}
 		printContent();
 	}
 	

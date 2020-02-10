@@ -14,6 +14,10 @@ public class Httpc {
 	private static File outputFile;
 	
 	public static void main(String[] args) {
+		if(args.length==0) {
+			System.err.println("No arguments passed");
+			return;
+		}
 		AtomicReference<Method> method = new AtomicReference<Method>();
 		AtomicReference<String> content = new AtomicReference<String>();
 		AtomicReference<Boolean> verbose = new AtomicReference<Boolean>();
@@ -63,6 +67,10 @@ public class Httpc {
 		
 		try {
 			String url = parser.parse(args)[0];
+			if(method.get() == null) {
+				System.err.println("no method specified");
+				return;
+			}
 			if(!url.equals("help")) {
 				URI uri = null;
 				if(!url.contains("http://")) {
