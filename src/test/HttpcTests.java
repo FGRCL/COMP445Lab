@@ -141,6 +141,39 @@ class HttpcTests {
 		String consoleOut = outContent.toString();
 		assertEquals(FileReader.getFileContent(new File("gethelp.txt")).replaceAll("\\s+",""), consoleOut.replaceAll("\\s+",""));
 	}
+	
+	@Test
+	void redi() {
+		//given
+		String fileName = "out.txt";
+		String[] args = {"get", "-o", fileName, "http://httpbin.org/get?course=networking&assignment=1"};
+		
+		//when
+		Httpc.main(args);
+		
+		//then
+		File file = new File(fileName);
+		String fileContent = FileReader.getFileContent(file);
+		assertNotNull(fileContent);
+		assertFalse(fileContent.isEmpty());
+		assertTrue(fileContent.contains("\"assignment\": \"1\""));
+		assertTrue(fileContent.contains("\"course\": \"networking\""));
+	}
+	
+	@Test
+	void redirectTest() {
+		//given
+		String[] args = {"get", "http://httpbin.org/status/302"};
+		
+		//when
+		Httpc.main(args);
+		
+		//then
+		String consoleOut = outContent.toString();
+		assertNotNull(consoleOut.toString());
+		assertFalse(consoleOut.isEmpty());
+		assertFalse(consoleOut.contains("302 Found"));
+	}
 
 	@AfterEach
 	public void restoreStreams() {
