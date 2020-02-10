@@ -1,0 +1,9 @@
+{
+  "args": {}, 
+  "headers": {
+    "Host": "100.25.11.135", 
+    "X-Amzn-Trace-Id": "Root=1-5e418996-5ec43607626bbaeb1c4f5faf"
+  }, 
+  "origin": "132.205.229.196", 
+  "url": "http://100.25.11.135/get"
+}
